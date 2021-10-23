@@ -18,5 +18,4 @@ namespace Catalog.Dtos
         public DateTimeOffset CreatedDate { get; init; }
     }
 
-
 }
