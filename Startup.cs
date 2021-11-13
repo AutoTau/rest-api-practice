@@ -43,7 +43,11 @@ namespace Catalog
 
             services.AddSingleton<IItemsRepository, MongoDbItemsRepository>();
 
-            services.AddControllers();
+            //.NET tries to take away Async in method names, so add this or else the compiler will fuddle things up.
+            services.AddControllers(options => {
+                options.SuppressAsyncSuffixInActionNames = false;
+            });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Catalog", Version = "v1" });
