@@ -24,12 +24,17 @@ namespace Catalog.Api.Controllers
 
         // GET /items
         [HttpGet]
-        public async Task<IEnumerable<ItemDto>> GetItemsAsync()
+        public async Task<IEnumerable<ItemDto>> GetItemsAsync(string name = null)
         {
             // First await the get items asynchronously call, then Select the item
             var items = (await repository.GetItemsAsync())
                 .Select(item => item.AsDto());
-                
+
+            if (!String.IsNullOrWhiteSpace(name))
+            {
+                items = items.Where(item => item.Name.Contains(name, StringComparison.OrdinalIgnoreCase));
+            }
+
             logger.LogInformation($"{DateTime.UtcNow.ToString("hh:mm:ss")}: Retrieved {items.Count()} items");
             return items;
         }
@@ -57,6 +62,7 @@ namespace Catalog.Api.Controllers
             Item item = new(){
                 Id = Guid.NewGuid(),
                 Name = itemDto.Name,
+                Description = itemDto.Description,
                 Price = itemDto.Price,
                 CreatedDate = DateTimeOffset.UtcNow
             };
@@ -77,14 +83,10 @@ namespace Catalog.Api.Controllers
                 return NotFound();
             }
 
-            // Take the existing item, make a copy of the item with the following 2 properties modified
-            Item updatedItem = existingItem with 
-            {
-                Name = itemDto.Name,
-                Price = itemDto.Price
-            };
+            existingItem.Name = itemDto.Name;
+            existingItem.Price = itemDto.Price;
 
-            await repository.UpdateItemAsync(updatedItem);
+            await repository.UpdateItemAsync(existingItem);
 
             return NoContent();
         }
@@ -104,6 +106,7 @@ namespace Catalog.Api.Controllers
 
             return NoContent();
         }
+
 
     }
 
