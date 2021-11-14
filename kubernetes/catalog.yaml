@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
       - name: catalog
-        image: autotau/catalog:v1
+        image: autotau/catalog:v2
         resources:
           limits:
             memory: "128Mi"
